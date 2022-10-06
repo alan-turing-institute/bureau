@@ -1,0 +1,12 @@
+---
+
+- name: Include package variables
+  ansible.builtin.include_vars: packages.yaml
+
+- name: Install packages
+  ansible.builtin.apt:
+    state: present
+    name: "{{ packages.common | union(packages[ansible_facts['distribution_release']]) }}"
+  when: ansible_facts['distribution'] == "Ubuntu"
+  async: 600
+  poll: 5
