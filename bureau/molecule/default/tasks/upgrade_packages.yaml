@@ -1,0 +1,6 @@
+---
+
+- name: Upgrade Ubuntu packages
+  ansible.builtin.apt:
+    upgrade: yes
+  when: ansible_facts['distribution'] == "Ubuntu"
