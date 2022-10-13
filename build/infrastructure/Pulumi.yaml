@@ -1,0 +1,4 @@
+name: bureau_build
+description: Build infrastructure for bureau images
+runtime:
+  name: python

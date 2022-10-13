@@ -1,0 +1,4 @@
+name: bureau_gallery
+description: Infrastructure for bureau image
+runtime:
+    name: python
