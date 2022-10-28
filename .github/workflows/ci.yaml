@@ -27,4 +27,4 @@ jobs:
         run: yamllint -f github ./bureau/
 
       - name: Lint Ansible
-        run: ansible-lint
+        run: ansible-lint ./bureau/
