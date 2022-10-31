@@ -94,7 +94,7 @@ class BuildVM(ComponentResource):
         self.public_ip = vm.id.apply(
             lambda _: network.get_public_ip_address_output(
                 public_ip_address_name=public_ip.name,
-                resource_group_name=resource_group.name
+                resource_group_name=args.resource_group.name
             )
         )
 
