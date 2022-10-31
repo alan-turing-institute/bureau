@@ -1,8 +1,10 @@
 from datetime import datetime
+from functools import partial
 from pathlib import Path
 import argparse
 
 from pulumi import automation as auto  # type: ignore
+import ansible_runner  # type: ignore
 
 
 def get_clargs():
@@ -45,8 +47,10 @@ def main():
         date_string = datetime.today().strftime('%Y%m%dT%H%M%S')
         stack_name = f'dev_{date_string}'
 
+    step = partial(run_step, steps=clargs.steps)
+
     work_dir = (
-        Path(__file__).parent.parent.absolute() / Path('infrastructure/')
+        Path(__file__).parent.parent.absolute() / 'infrastructure/'
     )
     workspace = auto.LocalWorkspace(work_dir=work_dir)
     stack = auto.create_or_select_stack(
@@ -58,16 +62,39 @@ def main():
                      auto.ConfigValue(value='uksouth'))
     stack.refresh(on_output=print)
 
-    if run_step('provision', clargs.steps):
+    if step('provision'):
         up_result = stack.up(on_output=print)
 
         print(f'Focal IP: {up_result.outputs["focal_ip"].value}')
         print(f'{type(up_result.outputs["focal_ip"].value)}')
 
-    if run_step('destroy', clargs.steps):
+    if step('build'):
+        outputs = workspace.stack_outputs(stack_name)
+        inventory = {
+            'all': {
+                'hosts': {
+                    name.split('_')[0]: {
+                        'ansible_host': str(ip),
+                        'ansible_user': 'build_admin'
+                    }
+                    for name, ip in outputs.items()
+                }
+            }
+        }
+
+        ansible_runner.run(
+            role='bureau',
+            roles_path=str(
+                (Path(__file__).parent.parent.parent).absolute()
+            ),
+            inventory=inventory,
+            cmdline='--become'
+        )
+
+    if step('destroy'):
         stack.destroy(on_output=print)
 
-    if run_step('remove', clargs.steps):
+    if step('remove'):
         workspace.remove_stack(stack_name=stack_name)
 
 
