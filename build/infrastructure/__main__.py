@@ -1,7 +1,7 @@
 from pathlib import Path
-import pulumi
+import pulumi  # type: ignore
 from pulumi import ComponentResource, ResourceOptions
-from pulumi_azure_native import compute, network, resources
+from pulumi_azure_native import compute, network, resources  # type: ignore
 
 
 class BuildVMArgs:
@@ -69,7 +69,9 @@ class BuildVM(ComponentResource):
                     disable_password_authentication=True,
                     ssh=compute.SshConfigurationArgs(
                         public_keys=[compute.SshPublicKeyArgs(
-                            key_data=(open(f"{Path.home()}/.ssh/id_rsa.pub").read()),
+                            key_data=(
+                                open(f"{Path.home()}/.ssh/id_rsa.pub").read()
+                            ),
                             path="/home/build_admin/.ssh/authorized_keys"
                         )]
                     )
@@ -151,5 +153,5 @@ vm_jammy = BuildVM(
 )
 
 
-pulumi.export("focal_ip", vm_focal.public_ip)
-pulumi.export("jammy_ip", vm_jammy.public_ip)
+pulumi.export("focal_ip", vm_focal.public_ip.ip_address)  # type: ignore
+pulumi.export("jammy_ip", vm_jammy.public_ip.ip_address)  # type: ignore
