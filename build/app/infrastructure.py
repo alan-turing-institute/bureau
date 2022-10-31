@@ -1,7 +1,8 @@
 from pathlib import Path
-import pulumi  # type: ignore
-from pulumi import ComponentResource, ResourceOptions
+
+from pulumi import ComponentResource, ResourceOptions  # type: ignore
 from pulumi_azure_native import compute, network, resources  # type: ignore
+import pulumi  # type: ignore
 
 
 class BuildVMArgs:
@@ -101,57 +102,56 @@ class BuildVM(ComponentResource):
         self.register_outputs({})
 
 
-config = pulumi.Config()
-date_string = config.require('date_string')
+def pulumi_program():
+    config = pulumi.Config()
+    date_string = config.require('date_string')
 
-# Create an Azure Resource Group
-resource_group = resources.ResourceGroup(
-    'resource_group',
-    resource_group_name=f'bureau_build_{date_string}'
-)
-
-vnet = network.VirtualNetwork(
-    "vnet",
-    virtual_network_name="vnet",
-    resource_group_name=resource_group.name,
-    address_space=network.AddressSpaceArgs(
-        address_prefixes=["10.0.0.0/16"],
-    ),
-    subnets=[network.SubnetArgs(
-        name="default",
-        address_prefix="10.0.0.0/24"
-    )]
-)
-
-vm_focal = BuildVM(
-    "vm_focal",
-    BuildVMArgs(
-        resource_group=resource_group,
-        image_reference=compute.ImageReferenceArgs(
-                offer="0001-com-ubuntu-server-focal",
-                publisher="canonical",
-                sku="20_04-lts-gen2",
-                version="latest",
-            ),
-        subnet=vnet.subnets[0]
+    # Create an Azure Resource Group
+    resource_group = resources.ResourceGroup(
+        'resource_group',
+        resource_group_name=f'bureau_build_{date_string}'
     )
-)
 
-
-vm_jammy = BuildVM(
-    "vm_jammy",
-    BuildVMArgs(
-        resource_group=resource_group,
-        image_reference=compute.ImageReferenceArgs(
-                offer="0001-com-ubuntu-server-jammy",
-                publisher="canonical",
-                sku="22_04-lts-gen2",
-                version="latest",
-            ),
-        subnet=vnet.subnets[0]
+    vnet = network.VirtualNetwork(
+        "vnet",
+        virtual_network_name="vnet",
+        resource_group_name=resource_group.name,
+        address_space=network.AddressSpaceArgs(
+            address_prefixes=["10.0.0.0/16"],
+        ),
+        subnets=[network.SubnetArgs(
+            name="default",
+            address_prefix="10.0.0.0/24"
+        )]
     )
-)
 
+    vm_focal = BuildVM(
+        "vm_focal",
+        BuildVMArgs(
+            resource_group=resource_group,
+            image_reference=compute.ImageReferenceArgs(
+                    offer="0001-com-ubuntu-server-focal",
+                    publisher="canonical",
+                    sku="20_04-lts-gen2",
+                    version="latest",
+                ),
+            subnet=vnet.subnets[0]
+        )
+    )
 
-pulumi.export("focal_ip", vm_focal.public_ip.ip_address)  # type: ignore
-pulumi.export("jammy_ip", vm_jammy.public_ip.ip_address)  # type: ignore
+    vm_jammy = BuildVM(
+        "vm_jammy",
+        BuildVMArgs(
+            resource_group=resource_group,
+            image_reference=compute.ImageReferenceArgs(
+                    offer="0001-com-ubuntu-server-jammy",
+                    publisher="canonical",
+                    sku="22_04-lts-gen2",
+                    version="latest",
+                ),
+            subnet=vnet.subnets[0]
+        )
+    )
+
+    pulumi.export("focal_ip", vm_focal.public_ip.ip_address)  # type: ignore
+    pulumi.export("jammy_ip", vm_jammy.public_ip.ip_address)  # type: ignore

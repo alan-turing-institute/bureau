@@ -6,6 +6,8 @@ import argparse
 from pulumi import automation as auto  # type: ignore
 import ansible_runner  # type: ignore
 
+from .infrastructure import pulumi_program
+
 
 def get_clargs():
     parser = argparse.ArgumentParser(
@@ -49,12 +51,10 @@ def main():
 
     step = partial(run_step, steps=clargs.steps)
 
-    work_dir = (
-        Path(__file__).parent.parent.absolute() / 'infrastructure/'
-    )
     stack = auto.create_or_select_stack(
+        project_name='bureau_build',
         stack_name=stack_name,
-        work_dir=work_dir
+        program=pulumi_program
     )
     stack.set_config('date_string', auto.ConfigValue(value=date_string))
     stack.set_config('azure-native:location',
