@@ -52,7 +52,6 @@ def main():
     work_dir = (
         Path(__file__).parent.parent.absolute() / 'infrastructure/'
     )
-    workspace = auto.LocalWorkspace(work_dir=work_dir)
     stack = auto.create_or_select_stack(
         stack_name=stack_name,
         work_dir=work_dir
@@ -69,7 +68,7 @@ def main():
         print(f'{type(up_result.outputs["focal_ip"].value)}')
 
     if step('build'):
-        outputs = workspace.stack_outputs(stack_name)
+        outputs = stack.workspace.stack_outputs(stack_name)
         inventory = {
             'all': {
                 'hosts': {
@@ -91,11 +90,14 @@ def main():
             cmdline='--become'
         )
 
+    if step('register'):
+        pass
+
     if step('destroy'):
         stack.destroy(on_output=print)
 
     if step('remove'):
-        workspace.remove_stack(stack_name=stack_name)
+        stack.workspace.remove_stack(stack_name=stack_name)
 
 
 if __name__ == '__main__':
