@@ -13,6 +13,10 @@ def get_stack(stack_name):
     return stack
 
 
+def install_plugins(stack):
+    stack.workspace.install_plugin('azure-native', 'v1.80.0')
+
+
 def set_stack_config(stack, date_string):
     stack.set_config('date_string', auto.ConfigValue(value=date_string))
     stack.set_config('azure-native:location',

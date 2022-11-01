@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "bureau-build"
-description = "Build and register bureau container images"
+description = "Build and register bureau virtual machine images"
 license = "MIT"
 version = "0.0.1"
 requires-python = ">=3.10"

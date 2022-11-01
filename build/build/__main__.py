@@ -50,6 +50,8 @@ def main():
 
     stack = infrastructure_steps.get_stack(stack_name)
 
+    infrastructure_steps.install_plugins(stack)
+
     infrastructure_steps.set_stack_config(stack, date_string)
 
     infrastructure_steps.refresh_stack(stack)
