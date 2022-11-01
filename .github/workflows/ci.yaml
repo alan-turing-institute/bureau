@@ -4,7 +4,7 @@ name: Lint
 on: push
 
 jobs:
-  lint:
+  bureau_lint:
     runs-on: ubuntu-latest
 
     name: Lint bureau
@@ -29,3 +29,54 @@ jobs:
 
       - name: Lint Ansible
         run: ansible-lint
+
+  build_lint:
+    runs-on: ubuntu-latest
+
+    name: Lint bureau build
+
+    defaults:
+      run:
+        working-directory: build
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: pip install '.[dev]'
+
+      - name: Lint
+        run: flake8 ./build
+
+      - name: Check imports
+        run: isort -c --diff ./build/**.py
+
+  build_typecheck:
+    runs-on: ubuntu-latest
+
+    name: Type check bureau build
+
+    defaults:
+      run:
+        working-directory: build
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: pip install '.[dev]'
+
+      - name: Type check
+        run: mypy --install-types --non-interactive --namespace-packages -p bureau-build
