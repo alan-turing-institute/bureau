@@ -24,10 +24,7 @@ def refresh_stack(stack):
 
 
 def provision(stack):
-    up_result = stack.up(on_output=print)
-
-    print(f'Focal IP: {up_result.outputs["focal_ip"].value}')
-    print(f'{type(up_result.outputs["focal_ip"].value)}')
+    stack.up(on_output=print)
 
 
 def destroy(stack):

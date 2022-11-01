@@ -1,11 +1,8 @@
 from datetime import datetime
 from functools import partial
-from pathlib import Path
 import argparse
 
-import ansible_runner  # type: ignore
-
-from . import infrastructure_steps
+from . import infrastructure_steps, build_steps
 
 
 def get_clargs():
@@ -61,27 +58,7 @@ def main():
         infrastructure_steps.provision(stack)
 
     if step('build'):
-        outputs = stack.workspace.stack_outputs(stack_name)
-        inventory = {
-            'all': {
-                'hosts': {
-                    name.split('_')[0]: {
-                        'ansible_host': str(ip),
-                        'ansible_user': 'build_admin'
-                    }
-                    for name, ip in outputs.items()
-                }
-            }
-        }
-
-        ansible_runner.run(
-            role='bureau',
-            roles_path=str(
-                (Path(__file__).parent.parent.parent).absolute()
-            ),
-            inventory=inventory,
-            cmdline='--become'
-        )
+        build_steps.build(stack)
 
     if step('register'):
         pass
