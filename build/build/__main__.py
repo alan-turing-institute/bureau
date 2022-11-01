@@ -3,10 +3,9 @@ from functools import partial
 from pathlib import Path
 import argparse
 
-from pulumi import automation as auto  # type: ignore
 import ansible_runner  # type: ignore
 
-from .infrastructure import pulumi_program
+from . import infrastructure_steps
 
 
 def get_clargs():
@@ -42,6 +41,7 @@ def run_step(step_name, steps):
 def main():
     clargs = get_clargs()
 
+    # Process command line arguments
     if clargs.stack_name:
         stack_name = clargs.stack_name
         date_string = clargs.stack_name.split('_')[1]
@@ -51,21 +51,14 @@ def main():
 
     step = partial(run_step, steps=clargs.steps)
 
-    stack = auto.create_or_select_stack(
-        project_name='bureau_build',
-        stack_name=stack_name,
-        program=pulumi_program
-    )
-    stack.set_config('date_string', auto.ConfigValue(value=date_string))
-    stack.set_config('azure-native:location',
-                     auto.ConfigValue(value='uksouth'))
-    stack.refresh(on_output=print)
+    stack = infrastructure_steps.get_stack(stack_name)
+
+    infrastructure_steps.set_stack_config(stack, date_string)
+
+    infrastructure_steps.refresh_stack(stack)
 
     if step('provision'):
-        up_result = stack.up(on_output=print)
-
-        print(f'Focal IP: {up_result.outputs["focal_ip"].value}')
-        print(f'{type(up_result.outputs["focal_ip"].value)}')
+        infrastructure_steps.provision(stack)
 
     if step('build'):
         outputs = stack.workspace.stack_outputs(stack_name)
@@ -94,10 +87,10 @@ def main():
         pass
 
     if step('destroy'):
-        stack.destroy(on_output=print)
+        infrastructure_steps.destroy(stack)
 
     if step('remove'):
-        stack.workspace.remove_stack(stack_name=stack_name)
+        infrastructure_steps.remove_stack(stack)
 
 
 if __name__ == '__main__':
