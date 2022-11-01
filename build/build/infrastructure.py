@@ -1,8 +1,8 @@
 from pathlib import Path
 
+import pulumi  # type: ignore
 from pulumi import ComponentResource, ResourceOptions  # type: ignore
 from pulumi_azure_native import compute, network, resources  # type: ignore
-import pulumi  # type: ignore
 
 
 class BuildVMArgs:

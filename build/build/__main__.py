@@ -1,8 +1,8 @@
+import argparse
 from datetime import datetime
 from functools import partial
-import argparse
 
-from . import infrastructure_steps, build_steps
+from . import build_steps, infrastructure_steps
 
 
 def get_clargs():
