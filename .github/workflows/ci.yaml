@@ -7,7 +7,11 @@ jobs:
   lint:
     runs-on: ubuntu-latest
 
-    name: Lint
+    name: Lint bureau
+
+    defaults:
+      run:
+        working-directory: bureau
 
     steps:
       - name: Checkout
@@ -21,10 +25,7 @@ jobs:
       - name: Install Python dependencies
         run: |
           python3 -m pip install --upgrade pip
-          python3 -m pip install ansible ansible-lint yamllint
-
-      - name: Lint YAML
-        run: yamllint -f github ./bureau/
+          python3 -m pip install -r requirements.txt
 
       - name: Lint Ansible
-        run: ansible-lint ./bureau/
+        run: ansible-lint
