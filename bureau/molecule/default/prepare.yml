@@ -4,5 +4,7 @@
   become: yes
 
   tasks:
-    - include_tasks: tasks/update_package_cache.yaml
-    - include_tasks: tasks/upgrade_packages.yaml
+    - name: Update apt cache
+      ansible.builtin.include_tasks: tasks/update_package_cache.yaml
+    - name: Upgrade all packages
+      ansible.builtin.include_tasks: tasks/upgrade_packages.yaml
