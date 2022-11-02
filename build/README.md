@@ -18,3 +18,12 @@ The Pulumi azure-native plugin is required but should be installed when running 
 You must be [logged in](https://learn.microsoft.com/en-us/cli/azure/authenticate-azure-cli) to Azure using the CLI.
 
 You must also ensure you are [logged in](https://www.pulumi.com/docs/reference/cli/pulumi_login/) to the correct pulumi backend.
+
+### Environment variables
+
+| name            | value                               |
+|-----------------|-------------------------------------|
+| SUBSCRIPTION_ID | ID of the Azure subscription to use |
+
+The program uses [python-dotenv](https://pypi.org/project/python-dotenv/).
+Environment variables may be set in a file called `.env` for convenience.
