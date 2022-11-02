@@ -5,7 +5,7 @@ from os import getenv
 
 from dotenv import load_dotenv
 
-from . import build_steps, infrastructure_steps
+from . import build_steps, infrastructure_steps, register_steps
 
 
 def get_clargs():
@@ -70,7 +70,9 @@ def main():
         build_steps.build(stack)
 
     if step('register'):
-        pass
+        credential = register_steps.get_azure_credential()
+        compute_client = register_steps.get_compute_client(credential,
+                                                           subscription_id)
 
     if step('destroy'):
         infrastructure_steps.destroy(stack)
