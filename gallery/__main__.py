@@ -12,3 +12,6 @@ gallery = compute.Gallery(
     gallery_name="bureau_gallery",
     resource_group_name=resource_group.name
 )
+
+pulumi.export("gallery_resource_group_name", resource_group.name)
+pulumi.export("gallery_name", gallery.name)
