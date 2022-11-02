@@ -13,6 +13,7 @@ def build(stack):
                     'ansible_user': 'build_admin'
                 }
                 for name, ip in outputs.items()
+                if name.endswith('_ip')
             }
         }
     }
