@@ -10,6 +10,10 @@ def get_compute_client(credential, subscription_id):
     return ComputeManagementClient(credential, subscription_id)
 
 
-def get_image_gallery(credential, subscription_id):
-    # gallery = compute_client.galleries.get()
-    pass
+def get_image_gallery(stack, compute_client):
+    outputs = stack.outputs()
+    gallery = compute_client.galleries.get(
+        resource_group_name=outputs['gallery_resource_group_name'],
+        gallery_name=outputs['gallery_name']
+    )
+    return gallery

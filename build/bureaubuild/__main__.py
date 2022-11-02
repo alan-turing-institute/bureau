@@ -86,6 +86,8 @@ def main():
         credential = register_steps.get_azure_credential()
         compute_client = register_steps.get_compute_client(credential,
                                                            subscription_id)
+        gallery = register_steps.get_image_gallery(stack, compute_client)
+        print(gallery)
 
     if step('destroy'):
         infrastructure_steps.destroy(stack)
