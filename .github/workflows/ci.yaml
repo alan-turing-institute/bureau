@@ -57,26 +57,26 @@ jobs:
       - name: Check imports
         run: isort -c --diff ./bureaubuild/**.py
 
-  build_typecheck:
-    runs-on: ubuntu-latest
+  # build_typecheck:
+  #   runs-on: ubuntu-latest
 
-    name: Type check bureau build
+  #   name: Type check bureau build
 
-    defaults:
-      run:
-        working-directory: build
+  #   defaults:
+  #     run:
+  #       working-directory: build
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.10"
+  #     - name: Set up Python
+  #       uses: actions/setup-python@v4
+  #       with:
+  #         python-version: "3.10"
 
-      - name: Install dependencies
-        run: pip install '.[dev]'
+  #     - name: Install dependencies
+  #       run: pip install '.[dev]'
 
-      - name: Type check
-        run: mypy --install-types --non-interactive --namespace-packages -p bureaubuild
+  #     - name: Type check
+  #       run: mypy --install-types --non-interactive --namespace-packages -p bureaubuild
