@@ -1,7 +1,8 @@
 from pathlib import Path
 
 import pulumi  # type: ignore
-from pulumi import ComponentResource, ResourceOptions  # type: ignore
+from pulumi import (ComponentResource, ResourceOptions,
+                    StackReference)  # type: ignore
 from pulumi_azure_native import compute, network, resources  # type: ignore
 
 
@@ -105,6 +106,8 @@ class BuildVM(ComponentResource):
 def pulumi_program():
     config = pulumi.Config()
     date_string = config.require('date_string')
+    pulumi_org = config.require('pulumi_org')
+    stack_prefix = pulumi.get_stack().split('_')[0]
 
     # Create an Azure Resource Group
     resource_group = resources.ResourceGroup(
@@ -155,3 +158,10 @@ def pulumi_program():
 
     pulumi.export("focal_ip", vm_focal.public_ip.ip_address)  # type: ignore
     pulumi.export("jammy_ip", vm_jammy.public_ip.ip_address)  # type: ignore
+
+    gallery_stack = StackReference(
+        f'{pulumi_org}/bureau_gallery/{stack_prefix}'
+    )
+    pulumi.export("gallery_name", gallery_stack.get_output("gallery_name"))
+    pulumi.export("gallery_resource_group_name",
+                  gallery_stack.get_output("gallery_resource_group_name"))

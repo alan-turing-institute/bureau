@@ -24,6 +24,7 @@ You must also ensure you are [logged in](https://www.pulumi.com/docs/reference/c
 | name            | value                               |
 |-----------------|-------------------------------------|
 | SUBSCRIPTION_ID | ID of the Azure subscription to use |
+| PULUMI_ORG      | Name of the Pulumi organisation     |
 
 The program uses [python-dotenv](https://pypi.org/project/python-dotenv/).
 Environment variables may be set in a file called `.env` for convenience.

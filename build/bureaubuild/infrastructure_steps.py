@@ -17,12 +17,13 @@ def install_plugins(stack):
     stack.workspace.install_plugin('azure-native', 'v1.80.0')
 
 
-def set_stack_config(stack, date_string, subscription_id):
-    stack.set_config('date_string', auto.ConfigValue(value=date_string))
+def set_stack_config(stack, date_string, subscription_id, pulumi_org):
     stack.set_config('azure-native:location',
                      auto.ConfigValue(value='uksouth'))
     stack.set_config('azure-native:subscriptionId',
                      auto.ConfigValue(value=subscription_id))
+    stack.set_config('date_string', auto.ConfigValue(value=date_string))
+    stack.set_config('pulumi_org', auto.ConfigValue(value=pulumi_org))
 
 
 def refresh_stack(stack):

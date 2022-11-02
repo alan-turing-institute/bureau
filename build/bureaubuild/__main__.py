@@ -22,10 +22,16 @@ def get_clargs():
         help='action(s) to perform'
     )
     parser.add_argument(
-        '--stack-name',
+        '--stack-prefix',
         action='store',
         required=False,
-        help='specify a stack name'
+        help='specify a stack name prefix'
+    )
+    parser.add_argument(
+        '--date-string',
+        action='store',
+        required=False,
+        help='specify a date string, applied to stack prefix'
     )
 
     return parser.parse_args()
@@ -42,16 +48,22 @@ def main():
     clargs = get_clargs()
 
     # Process command line arguments
-    if clargs.stack_name:
-        stack_name = clargs.stack_name
-        date_string = clargs.stack_name.split('_')[1]
+    if clargs.date_string:
+        date_string = clargs.date_string
     else:
         date_string = datetime.today().strftime('%Y%m%dT%H%M%S')
-        stack_name = f'dev_{date_string}'
+
+    if clargs.stack_prefix:
+        stack_prefix = clargs.stack_prefix
+    else:
+        stack_prefix = 'dev'
+
+    stack_name = f'{stack_prefix}_{date_string}'
 
     # Process environment variables
     load_dotenv()
     subscription_id = getenv('SUBSCRIPTION_ID')
+    pulumi_org = getenv('PULUMI_ORG')
 
     step = partial(run_step, steps=clargs.steps)
 
@@ -59,7 +71,8 @@ def main():
 
     infrastructure_steps.install_plugins(stack)
 
-    infrastructure_steps.set_stack_config(stack, date_string, subscription_id)
+    infrastructure_steps.set_stack_config(stack, date_string, subscription_id,
+                                          pulumi_org)
 
     infrastructure_steps.refresh_stack(stack)
 
