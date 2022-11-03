@@ -32,3 +32,5 @@ focal_image_definition, jammy_image_definition = (
 
 pulumi.export("gallery_resource_group_name", resource_group.name)
 pulumi.export("gallery_name", gallery.name)
+pulumi.export("focal_image_name", focal_image_definition.name)
+pulumi.export("jammy_image_name", jammy_image_definition.name)
