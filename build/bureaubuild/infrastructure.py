@@ -157,6 +157,8 @@ def pulumi_program():
         )
     )
 
+    pulumi.export("location", provider_config.require("location"))
+
     pulumi.export("focal_ip", vm_focal.public_ip.ip_address)  # type: ignore
     pulumi.export("jammy_ip", vm_jammy.public_ip.ip_address)  # type: ignore
     pulumi.export("date_string", date_string)
@@ -167,4 +169,7 @@ def pulumi_program():
     pulumi.export("gallery_name", gallery_stack.get_output("gallery_name"))
     pulumi.export("gallery_resource_group_name",
                   gallery_stack.get_output("gallery_resource_group_name"))
-    pulumi.export("location", provider_config.require("location"))
+    pulumi.export("focal_image_name",
+                  gallery_stack.get_output("focal_image_name"))
+    pulumi.export("jammy_image_name",
+                  gallery_stack.get_output("jammy_image_name"))

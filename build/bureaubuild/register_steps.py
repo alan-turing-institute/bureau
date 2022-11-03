@@ -28,23 +28,17 @@ def gallery_image_identifier(sku):
     )
 
 
-def create_image_definition(stack, compute_client):
+def get_image_definitions(stack, compute_client):
     outputs = stack.outputs()
 
-    poller = compute_client.gallery_images.begin_create_or_update(
-        resource_group_name=outputs['gallery_resource_group_name'],
-        gallery_name=outputs['gallery_name'],
-        gallery_image_name='buruea',
-        gallery_image=GalleryImage(
-            location=outputs['location'],
-            os_type='Linux',
-            identifier=GalleryImageIdentifier(
-                **gallery_image_identifier('focal')
-            )
+    return [
+        compute_client.gallery_images.get(
+            resource_group_name=outputs['gallery_resource_group_name'],
+            gallery_name=outputs['gallery_name'],
+            gallery_image_name=outputs[f'{sku}_image_name']
         )
-    )
-    image_definition_focal = poller.result()
-    return image_definition_focal
+        for sku in ['focal', 'jammy']
+    ]
 
 
 # def create_image_version(stack, compute_client):

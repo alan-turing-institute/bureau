@@ -88,9 +88,9 @@ def main():
             credential, subscription_id)
         gallery = register_steps.get_image_gallery(stack, compute_client)
         print(gallery)
-        image_definition = register_steps.create_image_definition(
+        image_definitions = register_steps.get_image_definitions(
             stack, compute_client)
-        print(image_definition)
+        print(image_definitions)
 
     if step('destroy'):
         infrastructure_steps.destroy(stack)
