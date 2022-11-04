@@ -1,5 +1,12 @@
+from datetime import datetime
+
 from azure.identity import AzureCliCredential
 from azure.mgmt.compute import ComputeManagementClient
+from azure.mgmt.compute.models import GalleryArtifactVersionSource
+from azure.mgmt.compute.models import GalleryImageVersion
+from azure.mgmt.compute.models import GalleryImageVersionPublishingProfile
+from azure.mgmt.compute.models import GalleryImageVersionStorageProfile
+from azure.mgmt.compute.models import TargetRegion
 
 
 def get_azure_credential():
@@ -40,18 +47,35 @@ def get_image_definitions(stack, compute_client):
     ]
 
 
-# def create_image_version(stack, compute_client):
-#     outputs = stack.outputs()
+def create_image_versions(stack, compute_client):
+    outputs = stack.outputs()
 
-#     poller = compute_client.gallery_image_versions.begin_create_or_update(
-#         resource_group_name=outputs['gallery_resource_group_name'],
-#         gallery_name=outputs['gallery_name'],
-#         gallery_image_name='bureau',
-#         gallery_image_verison_name=outputs['date_string'],
-#         gallery_image_version=GalleryImageVersion(
-#             location=outputs['location'],
+    dt = datetime.strptime(outputs['date_string'].value, '%Y%m%dT%H%M%S')
+    version_name = dt.strftime('%Y.%m%d.%H%M%S')
 
-#         )
-#     )
-#     image_version = poller.result()
-#     return image_version
+    target_regions = [TargetRegion(name=outputs['location'])]
+
+    image_versions = []
+    for sku in ['focal', 'jammy']:
+        poller = compute_client.gallery_image_versions.begin_create_or_update(
+            resource_group_name=outputs['gallery_resource_group_name'],
+            gallery_name=outputs['gallery_name'],
+            gallery_image_name=outputs[f'{sku}_image_name'],
+            gallery_image_version_name=version_name,
+            gallery_image_version=GalleryImageVersion(
+                location=outputs['location'],
+                publishing_profile=GalleryImageVersionPublishingProfile(
+                    target_regions=target_regions,
+                    replica_count=1,
+                    storage_account_type='Standard_ZRS'
+                ),
+                storage_profile=GalleryImageVersionStorageProfile(
+                    source=GalleryArtifactVersionSource(
+                        id=outputs[f'{sku}_id']
+                    )
+                )
+            )
+        )
+        image_versions.append(poller.result())
+
+    return image_versions

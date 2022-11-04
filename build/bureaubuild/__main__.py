@@ -91,6 +91,9 @@ def main():
         image_definitions = register_steps.get_image_definitions(
             stack, compute_client)
         print(image_definitions)
+        image_versions = register_steps.create_image_versions(
+            stack, compute_client)
+        print(image_versions)
 
     if step('destroy'):
         infrastructure_steps.destroy(stack)

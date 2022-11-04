@@ -53,7 +53,7 @@ class BuildVM(ComponentResource):
             opts=child_opts,
         )
 
-        vm = compute.VirtualMachine(
+        self.vm = compute.VirtualMachine(
             f"{name}_vm",
             resource_group_name=args.resource_group.name,
             location=args.resource_group.location,
@@ -92,7 +92,7 @@ class BuildVM(ComponentResource):
             opts=child_opts,
         )
 
-        self.public_ip = vm.id.apply(
+        self.public_ip = self.vm.id.apply(
             lambda _: network.get_public_ip_address_output(
                 public_ip_address_name=public_ip.name,
                 resource_group_name=args.resource_group.name
@@ -158,7 +158,9 @@ def pulumi_program():
 
     pulumi.export("location", provider_config.require("location"))
 
+    pulumi.export("focal_id", vm_focal.vm.id)
     pulumi.export("focal_ip", vm_focal.public_ip.ip_address)  # type: ignore
+    pulumi.export("jammy_id", vm_jammy.vm.id)
     pulumi.export("jammy_ip", vm_jammy.public_ip.ip_address)  # type: ignore
     pulumi.export("date_string", date_string)
 
