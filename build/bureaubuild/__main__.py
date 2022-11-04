@@ -83,7 +83,7 @@ def main():
         build_steps.build(stack)
 
     if step('register'):
-        register_steps.register(stack, subscription_id)
+        register_steps.register(stack)
 
     if step('destroy'):
         infrastructure_steps.destroy(stack)
