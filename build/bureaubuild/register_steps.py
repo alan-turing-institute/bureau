@@ -18,36 +18,6 @@ def get_compute_client(credential, subscription_id):
     return ComputeManagementClient(credential, subscription_id)
 
 
-def get_image_gallery(stack, compute_client):
-    outputs = stack.outputs()
-    gallery = compute_client.galleries.get(
-        resource_group_name=outputs['gallery_resource_group_name'],
-        gallery_name=outputs['gallery_name']
-    )
-    return gallery
-
-
-def gallery_image_identifier(sku):
-    return dict(
-        publisher='The_Alan_Turing_Institute',
-        offer='Bureau',
-        sku=sku
-    )
-
-
-def get_image_definitions(stack, compute_client):
-    outputs = stack.outputs()
-
-    return [
-        compute_client.gallery_images.get(
-            resource_group_name=outputs['gallery_resource_group_name'],
-            gallery_name=outputs['gallery_name'],
-            gallery_image_name=outputs[f'{sku}_image_name']
-        )
-        for sku in ['focal', 'jammy']
-    ]
-
-
 def create_image_versions(stack, compute_client):
     outputs = stack.outputs()
 
