@@ -59,8 +59,14 @@ def create_image_versions(stack, compute_client):
 
     print("\nStatus:")
     while not all([item.done() for item in image_versions.values()]):
-        print('\n'.join(
-            f'{name}: {value.status()}'
-            for name, value in image_versions.items()
-        ))
+        print_status(image_versions)
         sleep(30)
+
+    print_status(image_versions)
+
+
+def print_status(image_versions):
+    print('\n'.join(
+        f'{name}: {value.status()}'
+        for name, value in image_versions.items()
+    ))
