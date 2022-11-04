@@ -1,4 +1,5 @@
 from datetime import datetime
+from time import sleep
 
 from azure.identity import AzureCliCredential
 from azure.mgmt.compute import ComputeManagementClient
@@ -55,9 +56,10 @@ def create_image_versions(stack, compute_client):
 
     target_regions = [TargetRegion(name=outputs['location'])]
 
-    image_versions = []
-    for sku in ['focal', 'jammy']:
-        poller = compute_client.gallery_image_versions.begin_create_or_update(
+    print("\nCreating image versions")
+
+    image_versions = {
+        sku: compute_client.gallery_image_versions.begin_create_or_update(
             resource_group_name=outputs['gallery_resource_group_name'],
             gallery_name=outputs['gallery_name'],
             gallery_image_name=outputs[f'{sku}_image_name'],
@@ -76,6 +78,13 @@ def create_image_versions(stack, compute_client):
                 )
             )
         )
-        image_versions.append(poller.result())
+        for sku in ['focal', 'jammy']
+    }
 
-    return image_versions
+    print("\nStatus:")
+    while not all([item.done() for item in image_versions.values()]):
+        print('\n'.join(
+            f'{name}: {value.status()}'
+            for name, value in image_versions.items()
+        ))
+        sleep(30)
