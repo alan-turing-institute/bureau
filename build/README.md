@@ -28,3 +28,27 @@ You must also ensure you are [logged in](https://www.pulumi.com/docs/reference/c
 
 The program uses [python-dotenv](https://pypi.org/project/python-dotenv/).
 Environment variables may be set in a file called `.env` for convenience.
+
+## Usage
+
+All steps to build and register an image can be run with
+
+```
+bureaubuild all
+```
+
+Individual steps can also be run, most likely with the `--date-string` flag.
+This may be useful for debugging, completing a partial deployment, or removing resources.
+
+The steps are
+
+| step      | description                                                           |
+|-----------|-----------------------------------------------------------------------|
+| provision | Provision Azure resources for the build (Pulumi)                      |
+| build     | Build bureau (Ansible)                                                |
+| register  | Register bureau image versions in the gallery (Azure SDK)             |
+| destroy   | Destroy Azure resources for the build (but not the gallery!) (Pulumi) |
+| remove    | Remove the Pulumi stack used for the build (Pulumi)                   |
+
+The Pulumi stack name is a concatination of `--stack-prefix` (default: dev) and the date string.
+**Note:** It is assumed that the name of the gallery project stack to deploy the images to is identical to the stack prefix.
