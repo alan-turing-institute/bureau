@@ -2,11 +2,11 @@ from time import sleep
 
 from azure.identity import AzureCliCredential
 from azure.mgmt.compute import ComputeManagementClient
-from azure.mgmt.compute.models import GalleryArtifactVersionSource
-from azure.mgmt.compute.models import GalleryImageVersion
-from azure.mgmt.compute.models import GalleryImageVersionPublishingProfile
-from azure.mgmt.compute.models import GalleryImageVersionStorageProfile
-from azure.mgmt.compute.models import TargetRegion
+from azure.mgmt.compute.models import (GalleryArtifactVersionSource,
+                                       GalleryImageVersion,
+                                       GalleryImageVersionPublishingProfile,
+                                       GalleryImageVersionStorageProfile,
+                                       TargetRegion)
 
 from . import datestring
 
