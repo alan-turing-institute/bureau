@@ -1,4 +1,3 @@
-from datetime import datetime
 from time import sleep
 
 from azure.identity import AzureCliCredential
@@ -8,6 +7,8 @@ from azure.mgmt.compute.models import GalleryImageVersion
 from azure.mgmt.compute.models import GalleryImageVersionPublishingProfile
 from azure.mgmt.compute.models import GalleryImageVersionStorageProfile
 from azure.mgmt.compute.models import TargetRegion
+
+from . import datestring
 
 
 def register(stack):
@@ -22,10 +23,8 @@ def register(stack):
 def create_image_versions(stack, compute_client):
     outputs = stack.outputs()
 
-    dt = datetime.strptime(outputs['date_string'].value, '%Y%m%dT%H%M%S')
-    version_name = dt.strftime('%Y.%m%d.%H%M%S')
-
-    target_regions = [TargetRegion(name=outputs['location'])]
+    version_name = datestring.image_version_string(
+        outputs['date_string'].value)
 
     print("\nCreating image versions")
 
@@ -38,7 +37,7 @@ def create_image_versions(stack, compute_client):
             gallery_image_version=GalleryImageVersion(
                 location=outputs['location'],
                 publishing_profile=GalleryImageVersionPublishingProfile(
-                    target_regions=target_regions,
+                    target_regions=[TargetRegion(name=outputs['location'])],
                     replica_count=1,
                     storage_account_type='Standard_ZRS'
                 ),

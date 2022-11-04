@@ -5,7 +5,7 @@ from os import getenv
 
 from dotenv import load_dotenv
 
-from . import build_steps, infrastructure_steps, register_steps
+from . import build_steps, datestring, infrastructure_steps, register_steps
 
 
 def get_clargs():
@@ -50,6 +50,11 @@ def main():
     # Process command line arguments
     if clargs.date_string:
         date_string = clargs.date_string
+        if not datestring.validate_date_string(clargs.date_string):
+            print(
+                'Date string must be zero-padded and of the format'
+                f' {date_string.fmt}')
+            exit(1)
     else:
         date_string = datetime.today().strftime('%Y%m%dT%H%M%S')
 
