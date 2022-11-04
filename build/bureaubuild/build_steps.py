@@ -18,7 +18,7 @@ def build(stack):
         }
     }
 
-    ansible_runner.run(
+    runner = ansible_runner.run(
         role='bureau',
         roles_path=str(
             # Path to directory containing the bureau role directory
@@ -27,3 +27,8 @@ def build(stack):
         inventory=inventory,
         cmdline='--become'
     )
+
+    if runner.rc != 0:
+        print('Ansible returned non-zero code')
+        print(f'{runner.status}: {runner.rc}')
+        exit(1)
