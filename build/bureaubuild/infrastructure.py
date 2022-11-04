@@ -58,7 +58,7 @@ class BuildVM(ComponentResource):
             resource_group_name=args.resource_group.name,
             location=args.resource_group.location,
             hardware_profile=compute.HardwareProfileArgs(
-                vm_size="Standard_DC4s_v2",
+                vm_size="Standard_D4_v5",
             ),
             network_profile=compute.NetworkProfileArgs(network_interfaces=[
                 compute.NetworkInterfaceReferenceArgs(id=nic.id)
