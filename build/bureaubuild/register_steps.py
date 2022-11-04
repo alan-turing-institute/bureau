@@ -48,7 +48,7 @@ def create_image_versions(stack, compute_client):
                 )
             )
         )
-        for sku in ['focal', 'jammy']
+        for sku in outputs['skus'].value
     }
 
     print("\nStatus:")

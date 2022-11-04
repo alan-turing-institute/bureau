@@ -127,33 +127,33 @@ def pulumi_program():
         )]
     )
 
-    vm_focal = BuildVM(
-        "vm_focal",
-        BuildVMArgs(
+    skus = {
+        'focal': BuildVMArgs(
             resource_group=resource_group,
             image_reference=compute.ImageReferenceArgs(
-                    offer="0001-com-ubuntu-server-focal",
-                    publisher="canonical",
-                    sku="20_04-lts-gen2",
-                    version="latest",
-                ),
+                offer="0001-com-ubuntu-server-focal",
+                publisher="canonical",
+                sku="20_04-lts-gen2",
+                version="latest",
+            ),
+            subnet=vnet.subnets[0]
+        ),
+        'jammy': BuildVMArgs(
+            resource_group=resource_group,
+            image_reference=compute.ImageReferenceArgs(
+                offer="0001-com-ubuntu-server-jammy",
+                publisher="canonical",
+                sku="22_04-lts-gen2",
+                version="latest",
+            ),
             subnet=vnet.subnets[0]
         )
-    )
+    }
 
-    vm_jammy = BuildVM(
-        "vm_jammy",
-        BuildVMArgs(
-            resource_group=resource_group,
-            image_reference=compute.ImageReferenceArgs(
-                    offer="0001-com-ubuntu-server-jammy",
-                    publisher="canonical",
-                    sku="22_04-lts-gen2",
-                    version="latest",
-                ),
-            subnet=vnet.subnets[0]
-        )
-    )
+    vms = {
+        f'{sku}': BuildVM(f'vm_{sku}', args)
+        for sku, args in skus.items()
+    }
 
     # Export provider information
     provider_config = pulumi.Config('azure-native')
@@ -161,10 +161,12 @@ def pulumi_program():
     pulumi.export("subscription_id", provider_config.require("subscriptionId"))
 
     # Export build stack information
-    pulumi.export("focal_id", vm_focal.vm.id)
-    pulumi.export("focal_ip", vm_focal.public_ip.ip_address)  # type: ignore
-    pulumi.export("jammy_id", vm_jammy.vm.id)
-    pulumi.export("jammy_ip", vm_jammy.public_ip.ip_address)  # type: ignore
+    pulumi.export("skus", skus.keys())
+    for sku in skus.keys():
+        pulumi.export(f"{sku}_id", vms[sku].vm.id)
+    for sku in skus.keys():
+        pulumi.export(f"{sku}_ip", vms[sku].public_ip.ip_address)
+
     pulumi.export("date_string", date_string)
 
     # Export gallery stack information
