@@ -10,6 +10,12 @@ from azure.mgmt.compute.models import GalleryImageVersionStorageProfile
 from azure.mgmt.compute.models import TargetRegion
 
 
+def register(stack, subscription_id):
+    credential = get_azure_credential()
+    compute_client = get_compute_client(credential, subscription_id)
+    create_image_versions(stack, compute_client)
+
+
 def get_azure_credential():
     return AzureCliCredential()
 
