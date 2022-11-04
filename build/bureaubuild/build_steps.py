@@ -8,12 +8,11 @@ def build(stack):
     inventory = {
         'all': {
             'hosts': {
-                name.split('_')[0]: {
+                name: {
                     'ansible_host': str(ip),
                     'ansible_user': 'build_admin'
                 }
-                for name, ip in outputs.items()
-                if name.endswith('_ip')
+                for name, ip in outputs['ips'].value.items()
             }
         }
     }

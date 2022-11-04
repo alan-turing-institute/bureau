@@ -32,7 +32,7 @@ def create_image_versions(stack, compute_client):
         sku: compute_client.gallery_image_versions.begin_create_or_update(
             resource_group_name=outputs['gallery_resource_group_name'],
             gallery_name=outputs['gallery_name'],
-            gallery_image_name=outputs[f'{sku}_image_name'],
+            gallery_image_name=outputs['image_names'].value[sku],
             gallery_image_version_name=version_name,
             gallery_image_version=GalleryImageVersion(
                 location=outputs['location'],
@@ -43,7 +43,7 @@ def create_image_versions(stack, compute_client):
                 ),
                 storage_profile=GalleryImageVersionStorageProfile(
                     source=GalleryArtifactVersionSource(
-                        id=outputs[f'{sku}_id']
+                        id=outputs['ids'].value[sku]
                     )
                 )
             )

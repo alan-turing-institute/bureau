@@ -162,21 +162,20 @@ def pulumi_program():
 
     # Export build stack information
     pulumi.export("skus", skus.keys())
-    for sku in skus.keys():
-        pulumi.export(f"{sku}_id", vms[sku].vm.id)
-    for sku in skus.keys():
-        pulumi.export(f"{sku}_ip", vms[sku].public_ip.ip_address)
+    pulumi.export("ids", {sku: vms[sku].vm.id for sku in skus.keys()})
+    pulumi.export(
+        "ips", {sku: vms[sku].public_ip.ip_address for sku in skus.keys()})
 
     pulumi.export("date_string", date_string)
 
     # Export gallery stack information
     gallery_stack = StackReference(
-        f'{pulumi_org}/bureau_gallery/{stack_prefix}'
-    )
+        f'{pulumi_org}/bureau_gallery/{stack_prefix}')
     pulumi.export("gallery_name", gallery_stack.get_output("gallery_name"))
     pulumi.export("gallery_resource_group_name",
                   gallery_stack.get_output("gallery_resource_group_name"))
-    pulumi.export("focal_image_name",
-                  gallery_stack.get_output("focal_image_name"))
-    pulumi.export("jammy_image_name",
-                  gallery_stack.get_output("jammy_image_name"))
+    pulumi.export(
+        "image_names",
+        {sku: gallery_stack.get_output(f"{sku}_image_name")
+         for sku in skus.keys()}
+    )
