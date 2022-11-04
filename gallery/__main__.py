@@ -13,8 +13,8 @@ gallery = compute.Gallery(
     resource_group_name=resource_group.name
 )
 
-focal_image_definition, jammy_image_definition = (
-    compute.GalleryImage(
+image_definitions = {
+    sku: compute.GalleryImage(
         f"bureau_{sku}",
         resource_group_name=resource_group.name,
         gallery_name=gallery.name,
@@ -28,10 +28,15 @@ focal_image_definition, jammy_image_definition = (
         os_type=compute.OperatingSystemTypes.LINUX,
     )
     for sku in ["focal", "jammy"]
-)
+}
 
 
 pulumi.export("gallery_resource_group_name", resource_group.name)
 pulumi.export("gallery_name", gallery.name)
-pulumi.export("focal_image_name", focal_image_definition.name)
-pulumi.export("jammy_image_name", jammy_image_definition.name)
+pulumi.export(
+    "image_names",
+    {
+        sku: image_definition.name
+        for sku, image_definition in image_definitions.items()
+    }
+)

@@ -174,8 +174,4 @@ def pulumi_program():
     pulumi.export("gallery_name", gallery_stack.get_output("gallery_name"))
     pulumi.export("gallery_resource_group_name",
                   gallery_stack.get_output("gallery_resource_group_name"))
-    pulumi.export(
-        "image_names",
-        {sku: gallery_stack.get_output(f"{sku}_image_name")
-         for sku in skus.keys()}
-    )
+    pulumi.export("image_names", gallery_stack.get_output("image_names"))
