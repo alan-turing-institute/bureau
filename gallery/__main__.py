@@ -18,12 +18,13 @@ focal_image_definition, jammy_image_definition = (
         f"bureau_{sku}",
         resource_group_name=resource_group.name,
         gallery_name=gallery.name,
+        hyper_v_generation="V2",
         identifier=compute.GalleryImageIdentifierArgs(
             publisher="The_Alan_Turing_Institute",
             offer="Bureau",
             sku=sku,
         ),
-        os_state=compute.OperatingSystemStateTypes.GENERALIZED,
+        os_state=compute.OperatingSystemStateTypes.SPECIALIZED,
         os_type=compute.OperatingSystemTypes.LINUX,
     )
     for sku in ["focal", "jammy"]
