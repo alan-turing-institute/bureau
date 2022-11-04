@@ -1,6 +1,5 @@
 from azure.identity import AzureCliCredential
 from azure.mgmt.compute import ComputeManagementClient
-from azure.mgmt.compute.models import GalleryImage, GalleryImageIdentifier
 
 
 def get_azure_credential():
