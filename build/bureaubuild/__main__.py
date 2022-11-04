@@ -2,6 +2,7 @@ import argparse
 from datetime import datetime
 from functools import partial
 from os import getenv
+from time import sleep
 
 from dotenv import load_dotenv
 
@@ -83,6 +84,10 @@ def main():
 
     if step('provision'):
         infrastructure_steps.provision(stack)
+
+    if step('provision') and step('build'):
+        print("Waiting 60s so that build VMs are available")
+        sleep(60)
 
     if step('build'):
         build_steps.build(stack)
