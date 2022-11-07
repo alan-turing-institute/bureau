@@ -18,6 +18,8 @@ class BuildVMArgs:
 
 
 class BuildVM(ComponentResource):
+    admin_username = 'build_admin'
+
     def __init__(self, name: str, args: BuildVMArgs,
                  opts: ResourceOptions = None):
         super().__init__("custom:app:BuildVM", name, {}, opts)
@@ -64,8 +66,8 @@ class BuildVM(ComponentResource):
                 compute.NetworkInterfaceReferenceArgs(id=nic.id)
             ]),
             os_profile=compute.OSProfileArgs(
-                computer_name="bureau",
-                admin_username="build_admin",
+                computer_name="bureau_{name}",
+                admin_username=self.admin_username,
                 linux_configuration=compute.LinuxConfigurationArgs(
                     disable_password_authentication=True,
                     ssh=compute.SshConfigurationArgs(
@@ -151,7 +153,7 @@ def pulumi_program():
     }
 
     vms = {
-        f'{sku}': BuildVM(f'vm_{sku}', args)
+        sku: BuildVM(sku, args)
         for sku, args in skus.items()
     }
 
@@ -165,7 +167,7 @@ def pulumi_program():
     pulumi.export("ids", {sku: vms[sku].vm.id for sku in skus.keys()})
     pulumi.export(
         "ips", {sku: vms[sku].public_ip.ip_address for sku in skus.keys()})
-
+    pulumi.export('admin_username', BuildVM.admin_username)
     pulumi.export("date_string", date_string)
 
     # Export gallery stack information

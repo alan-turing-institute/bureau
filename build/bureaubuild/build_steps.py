@@ -10,7 +10,7 @@ def build(stack):
             'hosts': {
                 name: {
                     'ansible_host': str(ip),
-                    'ansible_user': 'build_admin'
+                    'ansible_user': outputs['admin_username'].value
                 }
                 for name, ip in outputs['ips'].value.items()
             }
