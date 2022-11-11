@@ -66,7 +66,7 @@ class BuildVM(ComponentResource):
                 compute.NetworkInterfaceReferenceArgs(id=nic.id)
             ]),
             os_profile=compute.OSProfileArgs(
-                computer_name="bureau_{name}",
+                computer_name="bureau",
                 admin_username=self.admin_username,
                 linux_configuration=compute.LinuxConfigurationArgs(
                     disable_password_authentication=True,
