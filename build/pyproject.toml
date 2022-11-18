@@ -12,6 +12,7 @@ dependencies = [
   "ansible-runner~=2.2.1",
   "azure-mgmt-compute~=29.0.0",
   "azure-identity~=1.11.0",
+  "fabric~=2.7.1",
   "pulumi~=3.40.2",
   "pulumi-azure-native~=1.80.0",
   "python-dotenv~=0.21.0"
