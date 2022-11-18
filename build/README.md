@@ -42,13 +42,14 @@ This may be useful for debugging, completing a partial deployment, or removing r
 
 The steps are
 
-| step      | description                                                           |
-|-----------|-----------------------------------------------------------------------|
-| provision | Provision Azure resources for the build (Pulumi)                      |
-| build     | Build bureau (Ansible)                                                |
-| register  | Register bureau image versions in the gallery (Azure SDK)             |
-| destroy   | Destroy Azure resources for the build (but not the gallery!) (Pulumi) |
-| remove    | Remove the Pulumi stack used for the build (Pulumi)                   |
+| step        | description                                                                                                                                         |
+| ----------- | -----------------------------------------------------------------------                                                                             |
+| provision   | Provision Azure resources for the build (Pulumi)                                                                                                    |
+| build       | Build bureau (Ansible)                                                                                                                              |
+| generalise  | [Generalise](https://learn.microsoft.com/en-us/azure/virtual-machines/linux/imaging#generalized-and-specialized) bureau images (Fabric + Azure SDK) |
+| register    | Register bureau image versions in the gallery (Azure SDK)                                                                                           |
+| destroy     | Destroy Azure resources for the build (but not the gallery!) (Pulumi)                                                                               |
+| remove      | Remove the Pulumi stack used for the build (Pulumi)                                                                                                 |
 
 The Pulumi stack name is a concatination of `--stack-prefix` (default: dev) and the date string.
 **Note:** It is assumed that the name of the gallery project stack to deploy the images to is identical to the stack prefix.
