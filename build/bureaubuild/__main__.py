@@ -17,7 +17,8 @@ def get_clargs():
     parser.add_argument(
         'steps',
         action='store',
-        choices=['all', 'provision', 'build', 'register', 'destroy', 'remove'],
+        choices=['all', 'provision', 'build', 'generalise', 'register',
+                 'destroy', 'remove'],
         nargs='+',
         default=['all'],
         help='action(s) to perform'
@@ -92,6 +93,9 @@ def main():
 
     if step('build'):
         build_steps.build(stack)
+
+    if step('generalise'):
+        register_steps.generalise(stack)
 
     if step('register'):
         register_steps.register(stack)
