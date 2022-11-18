@@ -9,4 +9,4 @@
     name: "{{ packages.common | union(packages[ansible_facts['distribution_release']]) }}"
   when: ansible_facts['distribution'] == "Ubuntu"
   async: 600
-  poll: 5
+  poll: 30
