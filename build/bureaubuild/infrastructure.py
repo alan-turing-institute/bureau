@@ -22,30 +22,30 @@ class BuildVM(ComponentResource):
 
     def __init__(self, name: str, args: BuildVMArgs,
                  opts: ResourceOptions = None):
-        super().__init__("custom:app:BuildVM", name, {}, opts)
+        super().__init__('custom:app:BuildVM', name, {}, opts)
 
         child_opts = ResourceOptions(parent=self)
 
         public_ip = network.PublicIPAddress(
-            f"{name}_ip",
+            f'{name}_ip',
             resource_group_name=args.resource_group.name,
             location=args.resource_group.location,
-            public_ip_address_version="IPv4",
-            public_ip_allocation_method="Dynamic",
+            public_ip_address_version='IPv4',
+            public_ip_allocation_method='Dynamic',
             sku=network.PublicIPAddressSkuArgs(
-                name="Basic",
-                tier="Regional",
+                name='Basic',
+                tier='Regional',
             ),
             opts=child_opts,
         )
 
         nic = network.NetworkInterface(
-            f"{name}_nic",
+            f'{name}_nic',
             resource_group_name=args.resource_group.name,
             location=args.resource_group.location,
             ip_configurations=[
                 network.NetworkInterfaceIPConfigurationArgs(
-                    name="buildvmipconfig",
+                    name='buildvmipconfig',
                     subnet=network.SubnetArgs(id=args.subnet.id),
                     public_ip_address=network.PublicIPAddressArgs(
                         id=public_ip.id
@@ -56,26 +56,26 @@ class BuildVM(ComponentResource):
         )
 
         self.vm = compute.VirtualMachine(
-            f"{name}_vm",
+            f'{name}_vm',
             resource_group_name=args.resource_group.name,
             location=args.resource_group.location,
             hardware_profile=compute.HardwareProfileArgs(
-                vm_size="Standard_D4_v5",
+                vm_size='Standard_D4_v5',
             ),
             network_profile=compute.NetworkProfileArgs(network_interfaces=[
                 compute.NetworkInterfaceReferenceArgs(id=nic.id)
             ]),
             os_profile=compute.OSProfileArgs(
-                computer_name="bureau",
+                computer_name='bureau',
                 admin_username=self.admin_username,
                 linux_configuration=compute.LinuxConfigurationArgs(
                     disable_password_authentication=True,
                     ssh=compute.SshConfigurationArgs(
                         public_keys=[compute.SshPublicKeyArgs(
                             key_data=(
-                                open(f"{Path.home()}/.ssh/id_rsa.pub").read()
+                                open(f'{Path.home()}/.ssh/id_rsa.pub').read()
                             ),
-                            path="/home/build_admin/.ssh/authorized_keys"
+                            path='/home/build_admin/.ssh/authorized_keys'
                         )]
                     )
                 )
@@ -83,11 +83,11 @@ class BuildVM(ComponentResource):
             storage_profile=compute.StorageProfileArgs(
                 image_reference=args.image_reference,
                 os_disk=compute.OSDiskArgs(
-                    name=f"{name}_osdisk",
+                    name=f'{name}_osdisk',
                     caching=compute.CachingTypes.READ_WRITE,
-                    create_option="FromImage",
+                    create_option='FromImage',
                     managed_disk=compute.ManagedDiskParametersArgs(
-                        storage_account_type="StandardSSD_LRS",
+                        storage_account_type='StandardSSD_LRS',
                     ),
                 )
             ),
@@ -117,15 +117,15 @@ def pulumi_program():
     )
 
     vnet = network.VirtualNetwork(
-        "vnet",
-        virtual_network_name="vnet",
+        'vnet',
+        virtual_network_name='vnet',
         resource_group_name=resource_group.name,
         address_space=network.AddressSpaceArgs(
-            address_prefixes=["10.0.0.0/16"],
+            address_prefixes=['10.0.0.0/16'],
         ),
         subnets=[network.SubnetArgs(
-            name="default",
-            address_prefix="10.0.0.0/24"
+            name='default',
+            address_prefix='10.0.0.0/24'
         )]
     )
 
@@ -133,20 +133,20 @@ def pulumi_program():
         'focal': BuildVMArgs(
             resource_group=resource_group,
             image_reference=compute.ImageReferenceArgs(
-                offer="0001-com-ubuntu-server-focal",
-                publisher="canonical",
-                sku="20_04-lts-gen2",
-                version="latest",
+                offer='0001-com-ubuntu-server-focal',
+                publisher='canonical',
+                sku='20_04-lts-gen2',
+                version='latest',
             ),
             subnet=vnet.subnets[0]
         ),
         'jammy': BuildVMArgs(
             resource_group=resource_group,
             image_reference=compute.ImageReferenceArgs(
-                offer="0001-com-ubuntu-server-jammy",
-                publisher="canonical",
-                sku="22_04-lts-gen2",
-                version="latest",
+                offer='0001-com-ubuntu-server-jammy',
+                publisher='canonical',
+                sku='22_04-lts-gen2',
+                version='latest',
             ),
             subnet=vnet.subnets[0]
         )
@@ -159,21 +159,23 @@ def pulumi_program():
 
     # Export provider information
     provider_config = pulumi.Config('azure-native')
-    pulumi.export("location", provider_config.require("location"))
-    pulumi.export("subscription_id", provider_config.require("subscriptionId"))
+    pulumi.export('location', provider_config.require('location'))
+    pulumi.export('subscription_id', provider_config.require('subscriptionId'))
 
     # Export build stack information
-    pulumi.export("skus", skus.keys())
-    pulumi.export("ids", {sku: vms[sku].vm.id for sku in skus.keys()})
+    pulumi.export('resource_group_name', resource_group.name)
+    pulumi.export('skus', skus.keys())
+    pulumi.export('names', {sku: vms[sku].vm.name for sku in skus.keys()})
+    pulumi.export('ids', {sku: vms[sku].vm.id for sku in skus.keys()})
     pulumi.export(
-        "ips", {sku: vms[sku].public_ip.ip_address for sku in skus.keys()})
+        'ips', {sku: vms[sku].public_ip.ip_address for sku in skus.keys()})
     pulumi.export('admin_username', BuildVM.admin_username)
-    pulumi.export("date_string", date_string)
+    pulumi.export('date_string', date_string)
 
     # Export gallery stack information
     gallery_stack = StackReference(
         f'{pulumi_org}/bureau_gallery/{stack_prefix}')
-    pulumi.export("gallery_name", gallery_stack.get_output("gallery_name"))
-    pulumi.export("gallery_resource_group_name",
-                  gallery_stack.get_output("gallery_resource_group_name"))
-    pulumi.export("image_names", gallery_stack.get_output("image_names"))
+    pulumi.export('gallery_name', gallery_stack.get_output('gallery_name'))
+    pulumi.export('gallery_resource_group_name',
+                  gallery_stack.get_output('gallery_resource_group_name'))
+    pulumi.export('image_names', gallery_stack.get_output('image_names'))

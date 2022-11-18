@@ -20,6 +20,8 @@ def get_compute_client(subscription_id):
 
 def generalise(stack):
     outputs = stack.outputs()
+    compute_client = get_compute_client(outputs['subscription_id'].value)
+    skus = outputs['skus'].value
 
     print('\nPreparing VMs for generalisation')
 
@@ -28,6 +30,24 @@ def generalise(stack):
         user=outputs['admin_username'].value
     )
     group.sudo('waagent -deprovision+user -force')
+
+    print('\nDeallocating VMs')
+    pollers = {
+        sku: compute_client.virtual_machines.begin_deallocate(
+            resource_group_name=outputs['resource_group_name'].value,
+            vm_name=outputs['names'].value[sku]
+        )
+        for sku in skus
+    }
+
+    wait_for_pollers(pollers)
+
+    print('\nGeneralising VMs')
+    for sku in skus:
+        compute_client.virtual_machines.generalize(
+            resource_group_name=outputs['resource_group_name'].value,
+            vm_name=outputs['names'].value[sku]
+        )
 
 
 def register(stack):
@@ -62,12 +82,16 @@ def register(stack):
         for sku in outputs['skus'].value
     }
 
-    print('\nStatus:')
-    while not all([item.done() for item in image_versions.values()]):
-        print_status(image_versions)
-        sleep(30)
+    wait_for_pollers(image_versions)
 
-    print_status(image_versions)
+
+def wait_for_pollers(pollers, interval=30):
+    print('\nStatus:')
+    while not all([item.done() for item in pollers.values()]):
+        print_status(pollers)
+        sleep(interval)
+
+    print_status(pollers)
 
 
 def print_status(pollers):
