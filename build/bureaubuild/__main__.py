@@ -86,8 +86,9 @@ def main():
         infrastructure_steps.provision(stack)
 
     if step('provision') and step('build'):
-        print("Waiting 60s so that build VMs are available")
-        sleep(60)
+        sleep_time = 120
+        print(f'Waiting {sleep_time}s so that build VMs are available')
+        sleep(sleep_time)
 
     if step('build'):
         build_steps.build(stack)
