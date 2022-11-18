@@ -1,8 +1,7 @@
-from pathlib import Path
-
 import pulumi
 from pulumi import ComponentResource, ResourceOptions, StackReference
 from pulumi_azure_native import compute, network, resources
+from pulumi_tls import PrivateKey
 
 
 class BuildVMArgs:
@@ -10,11 +9,13 @@ class BuildVMArgs:
         self,
         resource_group: resources.ResourceGroup,
         image_reference: compute.ImageReferenceArgs,
-        subnet: network.subnet
+        subnet: network.subnet,
+        private_key: PrivateKey
     ):
         self.resource_group = resource_group
         self.image_reference = image_reference
         self.subnet = subnet
+        self.private_key = private_key
 
 
 class BuildVM(ComponentResource):
@@ -73,7 +74,7 @@ class BuildVM(ComponentResource):
                     ssh=compute.SshConfigurationArgs(
                         public_keys=[compute.SshPublicKeyArgs(
                             key_data=(
-                                open(f'{Path.home()}/.ssh/id_rsa.pub').read()
+                                args.private_key.public_key_openssh
                             ),
                             path='/home/build_admin/.ssh/authorized_keys'
                         )]
@@ -110,6 +111,12 @@ def pulumi_program():
     pulumi_org = config.require('pulumi_org')
     stack_prefix = pulumi.get_stack().split('_')[0]
 
+    private_key = PrivateKey(
+        'private_key',
+        algorithm='RSA',
+        rsa_bits=2048
+    )
+
     # Create an Azure Resource Group
     resource_group = resources.ResourceGroup(
         'resource_group',
@@ -138,7 +145,8 @@ def pulumi_program():
                 sku='20_04-lts-gen2',
                 version='latest',
             ),
-            subnet=vnet.subnets[0]
+            subnet=vnet.subnets[0],
+            private_key=private_key
         ),
         'jammy': BuildVMArgs(
             resource_group=resource_group,
@@ -148,7 +156,8 @@ def pulumi_program():
                 sku='22_04-lts-gen2',
                 version='latest',
             ),
-            subnet=vnet.subnets[0]
+            subnet=vnet.subnets[0],
+            private_key=private_key
         )
     }
 
@@ -170,6 +179,7 @@ def pulumi_program():
     pulumi.export(
         'ips', {sku: vms[sku].public_ip.ip_address for sku in skus.keys()})
     pulumi.export('admin_username', BuildVM.admin_username)
+    pulumi.export('private_key', private_key.private_key_openssh)
     pulumi.export('date_string', date_string)
 
     # Export gallery stack information

@@ -24,6 +24,7 @@ def build(stack):
             (Path(__file__).parent.parent.parent).absolute()
         ),
         inventory=inventory,
+        ssh_key=outputs['private_key'].value,
         cmdline='--become'
     )
 
