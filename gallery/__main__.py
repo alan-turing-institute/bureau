@@ -24,7 +24,7 @@ image_definitions = {
             offer="Bureau",
             sku=sku,
         ),
-        os_state=compute.OperatingSystemStateTypes.SPECIALIZED,
+        os_state=compute.OperatingSystemStateTypes.GENERALIZED,
         os_type=compute.OperatingSystemTypes.LINUX,
     )
     for sku in ["focal", "jammy"]
