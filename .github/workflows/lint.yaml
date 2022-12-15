@@ -80,3 +80,30 @@ jobs:
 
   #     - name: Type check
   #       run: mypy --install-types --non-interactive --namespace-packages -p bureaubuild
+
+  gallery_lint:
+    runs-on: ubuntu-latest
+
+    name: Lint bureau gallery
+
+    defaults:
+      run:
+        working-directory: gallery
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: pip install -r requirements_dev.txt
+
+      - name: Lint
+        run: flake8 *.py
+
+      - name: Check imports
+        run: isort -c --diff *.py
