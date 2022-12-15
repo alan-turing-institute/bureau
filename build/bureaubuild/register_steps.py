@@ -1,5 +1,5 @@
-from time import sleep
 from io import StringIO
+from time import sleep
 
 from azure.identity import AzureCliCredential
 from azure.mgmt.compute import ComputeManagementClient
