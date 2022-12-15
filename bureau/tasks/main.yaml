@@ -1,10 +1,12 @@
 ---
 
 - name: Update apt cache
-  ansible.builtin.include_tasks: tasks/update_package_cache.yaml
+  ansible.builtin.import_tasks: tasks/update_package_cache.yaml
+  when: update
 
 - name: Upgrade all packages
-  ansible.builtin.include_tasks: tasks/upgrade_packages.yaml
+  ansible.builtin.import_tasks: tasks/upgrade_packages.yaml
+  when: update
 
 - name: Install packages
   ansible.builtin.import_tasks: tasks/packages.yaml

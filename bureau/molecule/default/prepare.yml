@@ -1,0 +1,11 @@
+---
+- name: Prepare
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Update packages
+      ansible.builtin.include_role:
+        name: bureau
+        vars:
+          update: yes

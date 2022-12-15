@@ -24,6 +24,9 @@ def build(stack):
             # Use symbolic link
             Path(__file__).parent.absolute()
         ),
+        extravars={
+            'update': 'yes'
+        },
         inventory=inventory,
         ssh_key=outputs['private_key'].value,
         cmdline='--become'
