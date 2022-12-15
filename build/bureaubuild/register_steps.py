@@ -1,4 +1,5 @@
 from time import sleep
+from io import StringIO
 
 from azure.identity import AzureCliCredential
 from azure.mgmt.compute import ComputeManagementClient
@@ -8,6 +9,7 @@ from azure.mgmt.compute.models import (GalleryArtifactVersionSource,
                                        GalleryImageVersionStorageProfile,
                                        TargetRegion)
 from fabric import ThreadingGroup as Group
+from paramiko import RSAKey
 
 from . import datestring
 
@@ -25,9 +27,14 @@ def generalise(stack):
 
     print('\nPreparing VMs for generalisation')
 
+    key = RSAKey.from_private_key(StringIO(outputs['private_key'].value))
+
     group = Group(
         *[outputs['ips'].value[sku] for sku in outputs['skus'].value],
-        user=outputs['admin_username'].value
+        user=outputs['admin_username'].value,
+        connect_kwargs={
+            'pkey': key
+        }
     )
     group.sudo('waagent -deprovision+user -force')
 
