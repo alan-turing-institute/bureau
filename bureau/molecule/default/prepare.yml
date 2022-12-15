@@ -7,5 +7,5 @@
     - name: Update packages
       ansible.builtin.include_role:
         name: bureau
-        vars:
-          update: yes
+      vars:
+        update: yes
