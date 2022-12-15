@@ -21,7 +21,8 @@ def build(stack):
         role='bureau',
         roles_path=str(
             # Path to directory containing the bureau role directory
-            (Path(__file__).parent.parent.parent).absolute()
+            # Use symbolic link
+            Path(__file__).parent.absolute()
         ),
         inventory=inventory,
         ssh_key=outputs['private_key'].value,
