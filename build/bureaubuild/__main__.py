@@ -71,6 +71,9 @@ def main():
     load_dotenv()
     subscription_id = getenv('SUBSCRIPTION_ID')
     pulumi_org = getenv('PULUMI_ORG')
+    client_id = getenv('CLIENT_ID')
+    client_secret = getenv('CLIENT_SECRET')
+    tenant_id = getenv('TENANT_ID')
 
     step = partial(run_step, steps=clargs.steps)
 
@@ -79,7 +82,8 @@ def main():
     infrastructure_steps.install_plugins(stack)
 
     infrastructure_steps.set_stack_config(stack, date_string, subscription_id,
-                                          pulumi_org)
+                                          pulumi_org, client_id, client_secret,
+                                          tenant_id)
 
     infrastructure_steps.refresh_stack(stack)
 

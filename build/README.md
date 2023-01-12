@@ -29,6 +29,14 @@ You must also ensure you are [logged in](https://www.pulumi.com/docs/reference/c
 The program uses [python-dotenv](https://pypi.org/project/python-dotenv/).
 Environment variables may be set in a file called `.env` for convenience.
 
+Additionally, if using a [service principal](https://learn.microsoft.com/en-us/cli/azure/create-an-azure-service-principal-azure-cli) to authenticate the following environment variables need to be defined
+
+| name          | value                                       |
+|---------------|---------------------------------------------|
+| CLIENT_ID     | The service principal's app ID              |
+| CLIENT_SECRET | The service principal's password            |
+| TENANT_ID     | The tenant the service principal belongs to |
+
 ## Usage
 
 All steps to build and register an image can be run with
