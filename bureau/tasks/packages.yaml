@@ -8,5 +8,5 @@
     state: present
     name: "{{ packages.common | union(packages[ansible_facts['distribution_release']]) }}"
   when: ansible_facts['distribution'] == "Ubuntu"
-  async: 600
+  async: 3600
   poll: 30
